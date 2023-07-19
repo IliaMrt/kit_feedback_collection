@@ -1,18 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class FeedbackDto {
+export class PersonalFeedbackDto {
+  readonly student: string;
   readonly attended: boolean;
-  readonly commentary:string;
-  readonly homework:string;
-  readonly star:number;
+  readonly commentary: string;
+  readonly star: boolean;
 
-
-  @ApiProperty()
-  readonly nameRu: string;
-
-  @ApiProperty()
-  readonly shortName: string;
-
-  @ApiProperty()
-  readonly nameEn: string;
+  readonly activity: boolean;
 }

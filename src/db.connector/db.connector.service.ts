@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
 import { open } from 'fs/promises';
@@ -50,15 +50,15 @@ export class DbConnectorService {
     console.log(sheet.rowCount);
   }
 
-  async getLessonsByTeacher() {
+  async getLessonsByUser(user) {
+    console.log('KIT - DbConnector Service - getLessonsByUser at', new Date());
+
     const sheet = await this.docInit(this.scheduleUrl, this.teacherSheetName);
 
     await sheet.loadCells('A1:B200');
-    console.log(sheet.cellStats); // total cells, loaded, how many non-empty
     const a1 = sheet.getCell(0, 0); // access cells using a zero-based index
-    console.log(a1.value);
 
-    const teacher = 'Московская Дарья'; //todo брать пользователя из токена
+    const teacher = await this.getTeacherByEmail(user);
     const lessons = {
       mainLessons: [],
       restLessons: [],
@@ -82,34 +82,54 @@ export class DbConnectorService {
         teaherLessonObj.set(currentTeacher, lessonsByCurrentTeacher);
       }*/
     }
-    console.log(JSON.stringify(lessons));
+    // console.log(JSON.stringify(lessons));
     return lessons;
     // const rows = await sheet.getRows();
     // console.log(rows[0].get('Педагоги'));
   }
 
+  private async getTeacherByEmail(user) {
+    console.log(
+      'KIT - DbConnector Service - Get Teacher By Email at',
+      new Date(),
+    );
+
+    const sheet = await this.docInit(this.usersListUrl, this.usersSheetName);
+    const rows = await sheet.getRows();
+    for (const row of rows) {
+      if (row.get('email') == user) return row.get('name');
+    }
+    return null;
+  }
+
   async getKidsByClasses(class_name) {
+    console.log('KIT - DbConnector Service - getKidsByClasses at', new Date());
     const sheet = await this.docInit(this.classesListUrl, this.kidsSheetName);
     const rows = await sheet.getRows();
-    console.log(
-      rows.forEach((row) => {
-        console.log(row);
-      }),
-    );
+    if (sheet.headerValues.findIndex((v) => v == class_name))
+      throw new HttpException('Класс не найден', HttpStatus.NOT_FOUND); //todo ловить исключения
+    const res = [];
+    rows.forEach((row) => {
+      if (row.get(class_name) != '') res.push(row.get(class_name));
+    });
+    return res;
   }
 
   async writeFeedBack(feedback: FeedbackForWriteDto) {
+    console.log('KIT - DbConnector Service - writeFeedBack', new Date());
+
     const sheet = await this.docInit(this.writeListUrl, this.writeSheetName);
     const result = [];
     const date = `${new Date().getDate()}/${
       new Date().getMonth() + 1
     }/${new Date().getFullYear()}`;
     const time = `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`;
-    console.log(date);
     feedback.personalFeedbacks.forEach((personal) =>
       result.push({
         teacher: feedback.teacher,
         lesson: feedback.lesson,
+        theme: feedback.theme,
+        lessonDate: feedback.lessonDate,
         className: feedback.className,
         student: personal.student,
         activity: personal.activity,
@@ -133,14 +153,18 @@ export class DbConnectorService {
   } //todo create USER
 
   async findUser(userDto: UserDto) {
-    console.log('KIT - DbConnector Service - Find User By Email at', new Date());
+    console.log(
+      'KIT - DbConnector Service - Find User By Email at',
+      new Date(),
+    );
 
     const sheet = await this.docInit(this.usersListUrl, this.usersSheetName);
     const rows = await sheet.getRows();
     for (const row of rows) {
       if (row.get('email') == userDto.email) return row.get('password');
     }
-    return null;}
+    return null;
+  }
 
   async findUserByLink(activationLink: string) {
     console.log('KIT - DbConnector Service - Find User By Link at', new Date());

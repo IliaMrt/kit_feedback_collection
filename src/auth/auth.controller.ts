@@ -1,10 +1,17 @@
-import { Body, Controller, Get, Param, Post, Req, Res, UseFilters } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  Res,
+  UseFilters,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { HttpExceptionFilter } from './http-exception.filter';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from 'express';
-
-import { RegistrationDto } from './dto/registration.dto';
 
 @Controller('auth')
 @UseFilters(new HttpExceptionFilter())
@@ -12,21 +19,18 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get('/activate/:link')
+  @ApiTags('Auth')
   @ApiOperation({ summary: 'Activate new account.' })
-
   async activateAccount(
     @Param('link') activationLink: string,
     @Res({ passthrough: true }) response: Response,
   ): Promise<any> {
-    console.log(
-      'KIT - Auth Controller - activateAccount at',
-      new Date(),
-    );
+    console.log('KIT - Auth Controller - activateAccount at', new Date());
 
     await this.authService.activate(activationLink);
     // this.checkForError(activationResult);
-// todo
-//     return response.redirect(this.configService.get('CLIENT_URL'));
+    // todo
+    //     return response.redirect(this.configService.get('CLIENT_URL'));
   }
   /* async registration(
     registrationDto: RegistrationDto,
@@ -47,6 +51,8 @@ export class AuthController {
     return profileData;
   }*/
   @Post('login')
+  @ApiTags('Auth')
+  @ApiOperation({ summary: 'Login.' })
   async login(@Body() dto /*: UserDto*/) {
     //todo сделать юзердто
     console.log('KIT - Auth Controller - login at', new Date());
@@ -55,6 +61,7 @@ export class AuthController {
   }
 
   @Post('registration')
+  @ApiTags('Auth')
   @ApiOperation({ summary: 'Create/register user.' })
   async registration(
     // @Body() registrationDto: RegistrationDto,
@@ -67,6 +74,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @ApiTags('Auth')
   async logout(data: { refreshToken: string }) {
     console.log('KIT - Auth Controller - logout at', new Date());
 
@@ -75,16 +83,18 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @ApiTags('Auth')
   async refresh(data: { refreshToken: string }) {
     // return await this.authService.refresh(data.refreshToken);
     // todo
   }
 
   @Post('activate')
+  @ApiTags('Auth')
   async activateUser(data: { activationLink: string }) {
     console.log('KIT - Auth Controller - activate at', new Date());
 
-     return await this.authService.activate(data.activationLink);
+    return await this.authService.activate(data.activationLink);
   }
 
   /*

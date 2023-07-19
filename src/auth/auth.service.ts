@@ -11,9 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { DbConnectorService } from '../db.connector/db.connector.service';
 import { TokenService } from '../token/token.service';
-import { Repository } from 'typeorm';
-import { Request, Response } from 'express';
-import { Token } from '../token/token.entity';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -81,7 +79,7 @@ export class AuthService {
     await this.dbConnector.saveUser(user);
 
     // const payload = await this.generatePayload(user);
-    const payload = { email: user.email };
+    const payload = { user: user.email };
     const tokens = this.tokenService.generateTokens(payload);
     response.cookie('refreshToken', tokens.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -125,7 +123,7 @@ export class AuthService {
       throw new UnauthorizedException({
         message: 'Неверный пароль',
       });
-    }//todo ловить исключение
+    } //todo ловить исключение
     const payload = await this.generatePayload(userDto.email);
     const tokens = this.tokenService.generateTokens(payload);
     await this.tokenService.saveToken(userDto.email, tokens.refreshToken);
@@ -134,7 +132,7 @@ export class AuthService {
   async generatePayload(user /*: User*/) {
     //todo create USER
 
-    return { email: user.email };
+    return { user: user.email };
   }
   async sendActivationMail(to, link) {
     console.log('KIT - Auth Service - send activation mail at', new Date());

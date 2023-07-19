@@ -7,9 +7,12 @@ export class Token {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ example: '1', description: 'Идентификатор пользователя' })
-  @Column({ type: 'numeric' })
-  userId: number;
+  @ApiProperty({
+    example: 'mail@mail.com',
+    description: 'Идентификатор пользователя',
+  })
+  @Column({ type: 'varchar' })
+  userEmail: string;
 
   @ApiProperty({
     example:

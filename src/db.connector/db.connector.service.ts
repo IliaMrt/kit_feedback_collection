@@ -106,7 +106,7 @@ export class DbConnectorService {
     console.log('KIT - DbConnector Service - getKidsByClasses at', new Date());
     const sheet = await this.docInit(this.classesListUrl, this.kidsSheetName);
     const rows = await sheet.getRows();
-    if (sheet.headerValues.findIndex((v) => v == class_name))
+    if (sheet.headerValues.findIndex((v) => v == class_name) < 0)
       throw new HttpException('Класс не найден', HttpStatus.NOT_FOUND); //todo ловить исключения
     const res = [];
     rows.forEach((row) => {

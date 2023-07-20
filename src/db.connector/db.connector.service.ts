@@ -7,8 +7,6 @@ import { UserDto } from '../auth/dto/user.dto';
 
 @Injectable()
 export class DbConnectorService {
-  private client_email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  private private_key = process.env.GOOGLE_PRIVATE_KEY;
   private teacherSheetName = 'Список уроков, педагогов и классов';
   private kidsSheetName = 'Kids';
   private usersSheetName = 'Users';
@@ -38,16 +36,6 @@ export class DbConnectorService {
     await doc.loadInfo();
     const sheet = doc.sheetsByTitle[sheetName];
     return sheet;
-  }
-
-  async getData() {
-    const sheet = await this.docInit(
-      '1EXkgWirs0yKL76x9xRMHj0I0OIPiGXxyWps-453DMSI',
-      '',
-    );
-
-    console.log(sheet.title);
-    console.log(sheet.rowCount);
   }
 
   async getLessonsByUser(user) {

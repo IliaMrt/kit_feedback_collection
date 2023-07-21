@@ -11,9 +11,11 @@ export class DbConnectorService {
   private kidsSheetName = 'Kids';
   private usersSheetName = 'Users';
   private writeSheetName = 'test';
+  private lessonsSheetName = 'LessonTeacher';
   private classesListUrl = '1EXkgWirs0yKL76x9xRMHj0I0OIPiGXxyWps-453DMSI';
   private writeListUrl = '1EXkgWirs0yKL76x9xRMHj0I0OIPiGXxyWps-453DMSI';
   private usersListUrl = '1EXkgWirs0yKL76x9xRMHj0I0OIPiGXxyWps-453DMSI';
+  private lessonsListUrl = '1EXkgWirs0yKL76x9xRMHj0I0OIPiGXxyWps-453DMSI';
   private scheduleUrl = '1JlCuXUp9KymE9mh2qKahPQjmmoo1zOPb2VXNKe-JpQU'; //todo change to external source
 
   private async docInit(docUrl: string, sheetName: string | number) {
@@ -52,7 +54,6 @@ export class DbConnectorService {
       restLessons: [],
     };
 
-    // const teaherLessonObj = new Map();
     for (let i = 1; i < 75; i++) {
       //todo 1 и 76 заменить на количество ячеек
       const currentTeacher = sheet.getCell(i, 1).value;
@@ -88,6 +89,27 @@ export class DbConnectorService {
       if (row.get('email') == user) return row.get('name');
     }
     return null;
+  }
+
+  async getClassesByLesson(lessonName) {
+    console.log(
+      'KIT - DbConnector Service - Get Classes By Lesson at',
+      new Date(),
+    );
+
+    const sheet = await this.docInit(
+      this.lessonsListUrl,
+      this.lessonsSheetName,
+    );
+
+    const result = new Set();
+
+    const rows = await sheet.getRows();
+    for (const row of rows) {
+      if (row.get('Предмет') == lessonName) result.add(row.get('Класс'));
+    }
+
+    return Array.from(result);
   }
 
   async getKidsByClasses(class_name) {

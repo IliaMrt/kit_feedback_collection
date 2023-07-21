@@ -17,7 +17,7 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from "./auth/Decorator/jwt-auth.guard";
+import { JwtAuthGuard } from './auth/Decorator/jwt-auth.guard';
 
 @Controller('kit')
 @UseGuards(AuthGuard)
@@ -56,6 +56,21 @@ export class AppController {
   @Get('get-kids-by-classes/:class')
   async getKidsByClasses(@Param('class') className) {
     return await this.appService.getKidsByClasses(className);
+  }
 
+  @ApiTags('Main functionality')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Returns classes by lesson.',
+    description: 'Returns classes by lesson name.',
+  })
+  @ApiParam({
+    name: 'Словесность',
+    required: true,
+    description: 'Name of a lesson.',
+  })
+  @Get('get-classes-by-lesson/:lesson')
+  async getClassesByLesson(@Param('lesson') lessonName) {
+    return await this.appService.getClassesByLesson(lessonName);
   }
 }

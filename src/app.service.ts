@@ -9,7 +9,7 @@ export class AppService {
   async writeFeedback(feedback) {
     console.log('KIT - Main Service - writeFeedback at', new Date());
 
-    return await this.dbConnector.writeFeedBack(feedback)
+    return await this.dbConnector.writeFeedBack(feedback);
 
     /*{
       "teacher": "Маша",
@@ -39,11 +39,16 @@ export class AppService {
 
   async getLessonsByUser(user) {
     console.log('KIT - Main Service - getLessonsByUser at', new Date());
-    return this.dbConnector.getLessonsByUser(user);
+    return await this.dbConnector.getLessonsByUser(user);
   }
 
   async getKidsByClasses(class_name) {
     console.log('KIT - Main Service - getKidsByClasses at', new Date());
-    return this.dbConnector.getKidsByClasses(class_name);
+    return await this.dbConnector.getKidsByClasses(class_name);
+  }
+
+  async getClassesByLesson(lessonName) {
+    console.log('KIT - Main Service - getClassesByName at', new Date());
+    return await this.dbConnector.getClassesByLesson(lessonName);
   }
 }

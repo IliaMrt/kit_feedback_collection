@@ -120,7 +120,8 @@ export class DbConnectorService {
       throw new HttpException('Класс не найден', HttpStatus.NOT_FOUND); //todo ловить исключения
     const res = [];
     rows.forEach((row) => {
-      if (row.get(class_name) != '') res.push(row.get(class_name));
+      if (row.get(class_name) != '')
+        res.push({ id: res.length + 1, name: row.get(class_name) });
     });
     return res;
   }

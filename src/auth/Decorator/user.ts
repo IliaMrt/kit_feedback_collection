@@ -4,6 +4,8 @@ import jwtDecode from 'jwt-decode';
 export const User = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    return jwtDecode(request.rawHeaders[1]);
+    const bearerIndex =
+      request.rawHeaders.findIndex((v) => v === 'Authorization') + 1;
+    return jwtDecode(request.rawHeaders[bearerIndex]);
   },
 );

@@ -6,10 +6,10 @@ import { FeedbackForWriteDto } from './db.connector/dto/feedback.for.write.dto';
 @Injectable()
 export class AppService {
   constructor(private dbConnector: DbConnectorService) {}
-  async writeFeedback(feedback) {
+  async writeFeedback(feedback, user) {
     console.log('KIT - Main Service - writeFeedback at', new Date());
 
-    return await this.dbConnector.writeFeedBack(feedback);
+    return await this.dbConnector.writeFeedBack(feedback, user);
 
     /*{
       "teacher": "Маша",

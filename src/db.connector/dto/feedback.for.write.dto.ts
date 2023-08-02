@@ -1,12 +1,15 @@
 import { PersonalFeedbackDto } from './personal.feedback.dto';
 
 export class FeedbackForWriteDto {
-  readonly teacher: string;
-  readonly lesson: string;
-  readonly className: string;
-  readonly lessonDate: string;
-  readonly theme: string;
+  form: {
+    readonly teacher: string;
+    readonly mainLessons: string;
+    readonly restLessons: string;
+    readonly class: string;
+    readonly date: string;
+    readonly theme: string;
+    readonly homework: string;
 
+  }
   readonly personalFeedbacks: PersonalFeedbackDto[];
-  readonly homework: string;
 }

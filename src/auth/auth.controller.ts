@@ -9,14 +9,19 @@ import {
   UseFilters,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { ConfigService } from '@nestjs/config';
 import { HttpExceptionFilter } from './http-exception.filter';
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Request, Response } from 'express';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
+import { UserDto } from './dto/user.dto';
 
 @Controller('auth')
 @UseFilters(new HttpExceptionFilter())
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private configService: ConfigService,
+  ) {}
 
   @Get('/activate/:link')
   @ApiTags('Auth')
@@ -26,37 +31,17 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ): Promise<any> {
     console.log('KIT - Auth Controller - activateAccount at', new Date());
-
     await this.authService.activate(activationLink);
     // this.checkForError(activationResult);
     // todo
-    //     return response.redirect(this.configService.get('CLIENT_URL'));
+    return response.redirect(this.configService.get('CLIENT_URL'));
   }
-  /* async registration(
-    registrationDto: RegistrationDto,
-    response: Response,
-  ): Promise<any> {*/
-  /*   const profileData = await lastValueFrom(
-      this.profileProxy.send({ cmd: 'registration' }, { registrationDto }),
-    );
-    this.checkForError(profileData);*/
 
-  /*
-    response.cookie('refreshToken', profileData.tokens.refreshToken, {
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });*/
-
-  /*
-    return profileData;
-  }*/
   @Post('login')
   @ApiTags('Auth')
   @ApiOperation({ summary: 'Login.' })
-  async login(@Body() dto /*: UserDto*/) {
-    //todo сделать юзердто
+  async login(@Body() dto: UserDto) {
     console.log('KIT - Auth Controller - login at', new Date());
-
     return await this.authService.login(dto);
   }
 
@@ -69,49 +54,29 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     console.log('KIT - Auth Controller - registration at', new Date());
-    // console.log(req);
     return this.authService.registration(req.body, res);
   }
 
   @Post('logout')
   @ApiTags('Auth')
+  @ApiOperation({ summary: 'Logout user.' })
   async logout(data: { refreshToken: string }) {
     console.log('KIT - Auth Controller - logout at', new Date());
-
-    // todo
-    // return await this.authService.logout(data.refreshToken);
+    return await this.authService.logout(data.refreshToken);
   }
 
   @Post('refresh')
   @ApiTags('Auth')
+  @ApiOperation({ summary: 'Refresh access token.' })
   async refresh(data: { refreshToken: string }) {
-    // return await this.authService.refresh(data.refreshToken);
-    // todo
+    return await this.authService.refresh(data.refreshToken);
   }
 
   @Post('activate')
   @ApiTags('Auth')
+  @ApiOperation({ summary: 'Activate user account.' })
   async activateUser(data: { activationLink: string }) {
     console.log('KIT - Auth Controller - activate at', new Date());
-
     return await this.authService.activate(data.activationLink);
   }
-
-  /*
-  @MessagePattern({ cmd: 'create  User' })
-  @Post()
-  async createUser(@Payload() data: { dto: UserDto }): Promise<{
-    user: User;
-    tokens: { accessToken: string; refreshToken: string };
-  }> {
-    return await this.usersService.registration(data.dto);
-  }
-*/
-
-  /*  @MessagePattern({ cmd: 'getUser' })
-  async getUser(
-    @Payload() data: { email: string; vkId: number; userId: number },
-  ) {
-    return await this.usersService.getUser(data.email, data.vkId, data.userId);
-  }*/
 }

@@ -39,8 +39,11 @@ export class AppController {
   @Post('write-feedback')
   @UseGuards(JwtAuthGuard)
   @ApiTags('Main functionality')
-  async writeFeedback(@Body() feedback) {
-    return await this.appService.writeFeedback(feedback);
+  async writeFeedback(@Body() feedback,
+                      @User() user) {
+    // console.log(JSON.stringify(feedback)+' '+user.user);
+    // return 100
+     return await this.appService.writeFeedback(feedback, user);
   }
   @ApiOperation({
     summary: 'Returns kids by class or group name.',

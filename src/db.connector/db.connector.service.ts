@@ -24,7 +24,6 @@ export class DbConnectorService {
       'r',
     );
     const temp = (await file.read()).buffer.toString(); //todo change to JSON
-    // console.log(temp); //todo переделать на JSON
     const data = temp; //JSON.parse(temp);
     const key = data; //.private_key;
     await file.close();
@@ -36,8 +35,7 @@ export class DbConnectorService {
     });
     const doc = new GoogleSpreadsheet(docUrl, serviceAccountAuth);
     await doc.loadInfo();
-    const sheet = doc.sheetsByTitle[sheetName];
-    return sheet;
+    return doc.sheetsByTitle[sheetName];
   }
 
   async getLessonsByUser(user) {
@@ -45,8 +43,7 @@ export class DbConnectorService {
 
     const sheet = await this.docInit(this.scheduleUrl, this.teacherSheetName);
 
-    await sheet.loadCells('A1:B200');
-    const a1 = sheet.getCell(0, 0); // access cells using a zero-based index
+    await sheet.loadCells('A1:B200'); //todo брать диапазон условно
 
     const teacher = await this.getTeacherByEmail(user);
     const lessons = {
@@ -61,20 +58,8 @@ export class DbConnectorService {
 
       if (currentTeacher == teacher) lessons.mainLessons.push(currentLesson);
       else lessons.restLessons.push(currentLesson);
-
-      // const lessonsByCurrentTeacher = teaherLessonObj.get(currentTeacher);
-
-      /*      if (!teaherLessonObj.has(currentTeacher)) {
-        teaherLessonObj.set(currentTeacher, [currentLesson]);
-      } else {
-        lessonsByCurrentTeacher.push(currentLesson);
-        teaherLessonObj.set(currentTeacher, lessonsByCurrentTeacher);
-      }*/
     }
-    // console.log(JSON.stringify(lessons));
     return lessons;
-    // const rows = await sheet.getRows();
-    // console.log(rows[0].get('Педагоги'));
   }
 
   private async getTeacherByEmail(user) {
@@ -121,14 +106,15 @@ export class DbConnectorService {
     const res = [];
     rows.forEach((row) => {
       if (row.get(class_name))
-        res.push({ id: res.length + 1, name: row.get(class_name) });
+        res.push({ id: res.length + 1, student: row.get(class_name) });
     });
     return res;
   }
 
-  async writeFeedBack(feedback: FeedbackForWriteDto) {
+  async writeFeedBack(feedback: FeedbackForWriteDto, user: string) {
     console.log('KIT - DbConnector Service - writeFeedBack', new Date());
 
+    const teacher = this.getTeacherByEmail(user);
     const sheet = await this.docInit(this.writeListUrl, this.writeSheetName);
     const result = [];
     const date = `${new Date().getDate()}/${
@@ -137,22 +123,25 @@ export class DbConnectorService {
     const time = `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`;
     feedback.personalFeedbacks.forEach((personal) =>
       result.push({
-        teacher: feedback.teacher,
-        lesson: feedback.lesson,
-        theme: feedback.theme,
-        lessonDate: feedback.lessonDate,
-        className: feedback.className,
+        teacher: teacher,
+        lesson:
+          feedback.form.mainLessons == '...'
+            ? feedback.form.restLessons
+            : feedback.form.mainLessons,
+        // theme: feedback.theme,
+        lessonDate: feedback.form.date,
+        className: feedback.form.class,
         student: personal.student,
         activity: personal.activity,
         attended: personal.attended,
         commentary: personal.commentary,
         star: personal.star,
-        homework: feedback.homework,
+        homework: feedback.form.homework,
         date: date,
         time: time,
       }),
     );
-
+    console.log(JSON.stringify(result));
     await sheet.addRows(result);
   }
 

@@ -19,8 +19,6 @@ export class AuthService {
 
   constructor(
     private configService: ConfigService,
-    // private readonly tokenRepository: Repository<Token>,
-
     private dbConnector: DbConnectorService,
     private tokenService: TokenService,
   ) {
@@ -41,7 +39,7 @@ export class AuthService {
     console.log(email);
     if (!email) {
       throw new HttpException( //todo ловить исключения
-        'Неккоректная ссылка активации',
+        'Некорректная ссылка активации',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -78,58 +76,37 @@ export class AuthService {
     );
     await this.dbConnector.saveUser(user);
 
-    // const payload = await this.generatePayload(user);
     const payload = { user: user.email };
     const tokens = this.tokenService.generateTokens(payload);
     response.cookie('refreshToken', tokens.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
-    return { user: user, tokens: tokens };
-  }
 
-  // Создание пользователя в базе данных
-  async createUser(dto: UserDto) /*: Promise<User> */ {
-    //todo create USER
-    const userInsertResult = await this.dbConnector.saveUser(dto);
-    return userInsertResult; //.raw[0];
+    return { user: user, tokens: tokens };
   }
 
   // Вход в систему, возвращает токены и пользователя
   async login(userDto: UserDto) {
     console.log('KIT - Auth Service - login at', new Date());
     const provider = 'local';
-    /*const user = await this.usersRepository.findOne({
-      where: { email: userDto.email },
-      relations: ['oauthProviders'],
-    });*/
     const password = await this.dbConnector.findUser(userDto);
     //todo добавить проверку
     /*   if (!user) {
       throw new HttpException('Пользователь не найден', HttpStatus.NOT_FOUND);
     }*/
-    /*
-    if (!providerFound) {
-      const providerInsertResult = await this.oauthRepository.insert({
-        provider,
-        user,
-      });
-      user.oauthProviders.push(providerInsertResult.raw[0]);
-      await this.oauthRepository.save(user);
-    }*/
-
     const passwordEquals = await bcrypt.compare(userDto.password, password);
     if (!passwordEquals && provider == 'local') {
       throw new UnauthorizedException({
         message: 'Неверный пароль',
       });
     } //todo ловить исключение
-    const payload = await this.generatePayload(userDto.email);
+    const payload = await this.generatePayload(userDto);
     const tokens = this.tokenService.generateTokens(payload);
     await this.tokenService.saveToken(userDto.email, tokens.refreshToken);
     return { ...tokens, email: userDto.email };
   }
-  async generatePayload(user /*: User*/) {
+  async generatePayload(user: UserDto) {
     //todo create USER
 
     return { user: user.email };
@@ -155,5 +132,15 @@ export class AuthService {
       console.log(`Unable to send activation mail: ${e.message}`);
     }
     return mailSent;
+  }
+
+  async logout(refreshToken: string) {
+    return Promise.resolve(undefined);
+    //todo реализовать метод
+  }
+
+  async refresh(refreshToken: string) {
+    return Promise.resolve(undefined);
+    //todo реализовать метод
   }
 }

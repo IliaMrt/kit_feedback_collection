@@ -27,7 +27,6 @@ export class JwtAuthGuard implements CanActivate {
       if (bearer !== 'Bearer' || !token) {
         throw new Error(); //todo
       }
-
       req.user = this.jwtService.verify(token, {
         secret: this.configService.get('JWT_SECRET_KEY'),
       });

@@ -109,7 +109,7 @@ export class AuthService {
   async generatePayload(user: UserDto) {
     //todo create USER
 
-    return { user: user.email };
+    return { user: user };
   }
   async sendActivationMail(to, link) {
     console.log('KIT - Auth Service - send activation mail at', new Date());

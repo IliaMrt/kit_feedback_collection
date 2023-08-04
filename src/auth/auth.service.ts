@@ -78,10 +78,12 @@ export class AuthService {
       activated: false,
     };
 
-    await this.sendActivationMail(
+    const s=await this.sendActivationMail(
       user.email,
       `localhost:3000/auth/activate/${user.activationLink}`,
     );
+    console.log(process.env.SMTP_HOST);
+    console.log(s);
     await this.dbConnector.saveUser(user);
 
     const payload = { email: user.email };

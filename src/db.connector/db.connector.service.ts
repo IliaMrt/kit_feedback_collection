@@ -7,7 +7,7 @@ import { UserDto } from '../auth/dto/user.dto';
 
 @Injectable()
 export class DbConnectorService {
-  private teacherSheetName = 'Список уроков, педагогов и классов';
+  private teacherSheetName = 'LessonTeacher';
   private kidsSheetName = 'Kids';
   private usersSheetName = 'Users';
   private writeSheetName = 'test';
@@ -16,7 +16,7 @@ export class DbConnectorService {
   private writeListUrl = '1EXkgWirs0yKL76x9xRMHj0I0OIPiGXxyWps-453DMSI';
   private usersListUrl = '1EXkgWirs0yKL76x9xRMHj0I0OIPiGXxyWps-453DMSI';
   private lessonsListUrl = '1EXkgWirs0yKL76x9xRMHj0I0OIPiGXxyWps-453DMSI';
-  private scheduleUrl = '1JlCuXUp9KymE9mh2qKahPQjmmoo1zOPb2VXNKe-JpQU'; //todo change to external source
+  private scheduleUrl = '1EXkgWirs0yKL76x9xRMHj0I0OIPiGXxyWps-453DMSI'; //todo change to external source
 
   private async docInit(docUrl: string, sheetName: string | number) {
     const file = await open(
@@ -40,7 +40,6 @@ export class DbConnectorService {
 
   async getLessonsByUser(user) {
     console.log('KIT - DbConnector Service - getLessonsByUser at', new Date());
-
     const sheet = await this.docInit(this.scheduleUrl, this.teacherSheetName);
 
     await sheet.loadCells('A1:B200'); //todo брать диапазон условно
@@ -50,15 +49,22 @@ export class DbConnectorService {
       mainLessons: [],
       restLessons: [],
     };
-
+    const mainSet = new Set();
+    const restSet = new Set();
     for (let i = 1; i < 75; i++) {
       //todo 1 и 76 заменить на количество ячеек
       const currentTeacher = sheet.getCell(i, 1).value;
       const currentLesson = sheet.getCell(i, 0).value;
-
-      if (currentTeacher == teacher) lessons.mainLessons.push(currentLesson);
-      else lessons.restLessons.push(currentLesson);
+      if (currentTeacher)
+        if (currentTeacher == teacher) mainSet.add(currentLesson);
+        else restSet.add(currentLesson);
     }
+    mainSet.forEach((v) => {
+      if (restSet.has(v)) restSet.delete(v);
+    });
+
+    lessons.mainLessons = Array.from(mainSet);
+    lessons.restLessons = Array.from(restSet);
     return lessons;
   }
 
@@ -114,12 +120,18 @@ export class DbConnectorService {
   async writeFeedBack(feedback: FeedbackForWriteDto, user: string) {
     console.log('KIT - DbConnector Service - writeFeedBack', new Date());
 
-    const teacher = this.getTeacherByEmail(user);
+    const teacher = await this.getTeacherByEmail(user);
+    console.log(user);
+    console.log(teacher);
     const sheet = await this.docInit(this.writeListUrl, this.writeSheetName);
     const result = [];
     const date = `${new Date().getDate()}/${
       new Date().getMonth() + 1
     }/${new Date().getFullYear()}`;
+    const tempDate = new Date(feedback.form.date);
+    const lessonDate = `${tempDate.getDate()}/${
+      tempDate.getMonth() + 1
+    }/${tempDate.getFullYear()}`;
     const time = `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`;
     feedback.personalFeedbacks.forEach((personal) =>
       result.push({
@@ -128,14 +140,14 @@ export class DbConnectorService {
           feedback.form.mainLessons == '...'
             ? feedback.form.restLessons
             : feedback.form.mainLessons,
-        // theme: feedback.theme,
-        lessonDate: feedback.form.date,
+        theme: feedback.form.theme,
+        lessonDate: lessonDate,
         className: feedback.form.class,
         student: personal.student,
-        activity: personal.activity,
-        attended: personal.attended,
+        activity: personal.activity || false,
+        attended: personal.attended || false,
         commentary: personal.commentary,
-        star: personal.star,
+        star: personal.star || false,
         homework: feedback.form.homework,
         date: date,
         time: time,
@@ -161,7 +173,11 @@ export class DbConnectorService {
     const sheet = await this.docInit(this.usersListUrl, this.usersSheetName);
     const rows = await sheet.getRows();
     for (const row of rows) {
-      if (row.get('email') == userDto.email) return row.get('password');
+      if (row.get('email') == userDto.email)
+        return {
+          password: row.get('password'),
+          activated: row.get('activated') === 'TRUE',
+        };
     }
     return null;
   }
@@ -191,6 +207,15 @@ export class DbConnectorService {
         await rows[i].save();
         return;
       }
+    }
+  }
+
+  async deleteUser(email: string) {
+    const sheet = await this.docInit(this.usersListUrl, this.usersSheetName);
+    const rows = await sheet.getRows();
+    for (const row of rows) {
+      if(row.get('email')==email )
+        await row.delete()
     }
   }
 }

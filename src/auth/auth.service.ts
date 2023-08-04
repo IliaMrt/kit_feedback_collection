@@ -50,18 +50,26 @@ export class AuthService {
 
     const formattedEmail = dto.email.toLowerCase();
 
-    //const candidate = await this.getUserByEmail(formattedEmail); todo включить проверку
-    /*
-    if (candidate) {
+    const candidate = await this.dbConnector.findUser({
+      email: formattedEmail,
+      password: null,
+    });
+
+    if (candidate?.activated) {
       //TODO: returns internal server error in response, not good.
       throw new HttpException(
         'Пользователь с таким email уже существует',
         HttpStatus.CONFLICT,
       );
     }
-*/
 
-    const hashPassword = await bcrypt.hash(dto.password, 5);
+    if (candidate?.activated===false) {
+      await this.dbConnector.deleteUser(formattedEmail)
+    }
+
+
+
+      const hashPassword = await bcrypt.hash(dto.password, 5);
 
     const user = {
       email: formattedEmail,
@@ -76,7 +84,7 @@ export class AuthService {
     );
     await this.dbConnector.saveUser(user);
 
-    const payload = { user: user.email };
+    const payload = { email: user.email };
     const tokens = this.tokenService.generateTokens(payload);
     response.cookie('refreshToken', tokens.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -90,17 +98,26 @@ export class AuthService {
   async login(userDto: UserDto) {
     console.log('KIT - Auth Service - login at', new Date());
     const provider = 'local';
-    const password = await this.dbConnector.findUser(userDto);
-    //todo добавить проверку
-    /*   if (!user) {
+    const userInfo: { password: string; activated: boolean } =
+      await this.dbConnector.findUser(userDto);
+    if (!userInfo.password) {
       throw new HttpException('Пользователь не найден', HttpStatus.NOT_FOUND);
-    }*/
-    const passwordEquals = await bcrypt.compare(userDto.password, password);
+    }
+    const passwordEquals = await bcrypt.compare(
+      userDto.password,
+      userInfo.password,
+    );
     if (!passwordEquals && provider == 'local') {
       throw new UnauthorizedException({
         message: 'Неверный пароль',
       });
     } //todo ловить исключение
+    if (!userInfo.activated) {
+      throw new HttpException(
+        'Пользователь не активирован, перейдите по ссылке из письма',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
     const payload = await this.generatePayload(userDto);
     const tokens = this.tokenService.generateTokens(payload);
     await this.tokenService.saveToken(userDto.email, tokens.refreshToken);
@@ -109,7 +126,7 @@ export class AuthService {
   async generatePayload(user: UserDto) {
     //todo create USER
 
-    return { user: user };
+    return { user: user?.email };
   }
   async sendActivationMail(to, link) {
     console.log('KIT - Auth Service - send activation mail at', new Date());
@@ -129,6 +146,8 @@ export class AuthService {
       });
       mailSent = true;
     } catch (e) {
+      throw new HttpException(e.message, HttpStatus.NOT_FOUND);
+
       console.log(`Unable to send activation mail: ${e.message}`);
     }
     return mailSent;

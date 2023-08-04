@@ -9,7 +9,7 @@ export class AppService {
   async writeFeedback(feedback, user) {
     console.log('KIT - Main Service - writeFeedback at', new Date());
 
-    return await this.dbConnector.writeFeedBack(feedback, user);
+    return await this.dbConnector.writeFeedBack(feedback, user.user);
 
     /*{
       "teacher": "Маша",

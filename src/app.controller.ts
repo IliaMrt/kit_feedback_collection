@@ -33,6 +33,7 @@ export class AppController {
   @ApiTags('Main functionality')
   @Get('get-lessons-by-user')
   async getLessonsByTeacher(@User() user) {
+    console.log('KIT - Main Controller - getLessonsByUser at', new Date());
     return await this.appService.getLessonsByUser(user.user);
   }
 

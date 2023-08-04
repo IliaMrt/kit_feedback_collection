@@ -16,7 +16,7 @@ import { Response } from 'express';
 import { UserDto } from './dto/user.dto';
 
 @Controller('auth')
-@UseFilters(new HttpExceptionFilter())
+// @UseFilters(new HttpExceptionFilter())
 export class AuthController {
   constructor(
     private readonly authService: AuthService,

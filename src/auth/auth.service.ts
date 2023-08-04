@@ -80,9 +80,8 @@ export class AuthService {
 
     const s=await this.sendActivationMail(
       user.email,
-      `localhost:3000/auth/activate/${user.activationLink}`,
+      `cc210ea5c208.sn.mynetname.net:9790/${user.activationLink}`,
     );
-    console.log(process.env.SMTP_HOST);
     console.log(s);
     await this.dbConnector.saveUser(user);
 
@@ -132,6 +131,10 @@ export class AuthService {
   }
   async sendActivationMail(to, link) {
     console.log('KIT - Auth Service - send activation mail at', new Date());
+    console.log(process.env.SMTP_HOST);
+    console.log(process.env.SMTP_PORT);
+    console.log(process.env.SMTP_USER);
+
     let mailSent = false;
     try {
       await this.transporter.sendMail({

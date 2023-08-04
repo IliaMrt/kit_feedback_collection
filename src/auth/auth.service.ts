@@ -7,6 +7,7 @@ import {
 import { UserDto } from './dto/user.dto';
 import * as bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
+import * as process from 'process';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { DbConnectorService } from '../db.connector/db.connector.service';
@@ -23,7 +24,7 @@ export class AuthService {
     private tokenService: TokenService,
   ) {
     this.transporter = nodemailer.createTransport({
-      host: 'smtp.mail.ru',//process.env.SMTP_HOST,
+      host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT,
       secure: true,
       auth: {

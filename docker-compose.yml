@@ -1,0 +1,29 @@
+version: "3.7"
+
+services:
+
+  kit:
+    container_name: kit
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+#      target: production
+    ports:
+      - "3100:3100"
+    restart: always
+    depends_on:
+      - kit_pg
+    volumes:
+      - /root/WebstormProjects/1:/app/1
+
+
+  kit_pg:
+    container_name: kit_pg
+    image: postgres:15.2-alpine
+    environment:
+      POSTGRES_DB: tokens
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432"
+    restart: always

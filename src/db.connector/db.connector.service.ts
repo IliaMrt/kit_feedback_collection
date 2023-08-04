@@ -4,33 +4,30 @@ import { JWT } from 'google-auth-library';
 import { open } from 'fs/promises';
 import { FeedbackForWriteDto } from './dto/feedback.for.write.dto';
 import { UserDto } from '../auth/dto/user.dto';
+import * as process from 'process';
+
 
 @Injectable()
 export class DbConnectorService {
-  private teacherSheetName = 'LessonTeacher';
-  private kidsSheetName = 'Kids';
-  private usersSheetName = 'Users';
-  private writeSheetName = 'test';
-  private lessonsSheetName = 'LessonTeacher';
-  private classesListUrl = '1EXkgWirs0yKL76x9xRMHj0I0OIPiGXxyWps-453DMSI';
-  private writeListUrl = '1EXkgWirs0yKL76x9xRMHj0I0OIPiGXxyWps-453DMSI';
-  private usersListUrl = '1EXkgWirs0yKL76x9xRMHj0I0OIPiGXxyWps-453DMSI';
-  private lessonsListUrl = '1EXkgWirs0yKL76x9xRMHj0I0OIPiGXxyWps-453DMSI';
-  private scheduleUrl = '1EXkgWirs0yKL76x9xRMHj0I0OIPiGXxyWps-453DMSI'; //todo change to external source
-
   private async docInit(docUrl: string, sheetName: string | number) {
-    const file = await open(
+    /*    const file = await open(
       '/root/WebstormProjects/kit_feedback_collection/src/db.connector/private_key.json',
+      'r',
+    );*/
+    /*   const file = await open(
+      '/root/WebstormProjects/kit_feedback_collection/config.files/private_key.json',
       'r',
     );
     const temp = (await file.read()).buffer.toString(); //todo change to JSON
-    const data = temp; //JSON.parse(temp);
+    console.log(temp);
+    const data = JSON.parse(temp);
+    console.log(data);
     const key = data; //.private_key;
-    await file.close();
-
+    await file.close();*/
+    console.log(1);
     const serviceAccountAuth = new JWT({
       email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      key: key,
+      key: process.env.GOOGLE_PRIVATE_KEY,
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
     const doc = new GoogleSpreadsheet(docUrl, serviceAccountAuth);
@@ -40,7 +37,11 @@ export class DbConnectorService {
 
   async getLessonsByUser(user) {
     console.log('KIT - DbConnector Service - getLessonsByUser at', new Date());
-    const sheet = await this.docInit(this.scheduleUrl, this.teacherSheetName);
+
+    const sheet = await this.docInit(
+      process.env.SCHEDULE_URL,
+      process.env.TEACHER_SHEET_NAME,
+    );
 
     await sheet.loadCells('A1:B200'); //todo брать диапазон условно
 
@@ -74,7 +75,10 @@ export class DbConnectorService {
       new Date(),
     );
 
-    const sheet = await this.docInit(this.usersListUrl, this.usersSheetName);
+    const sheet = await this.docInit(
+      process.env.USERS_LIST_URL,
+      process.env.USERS_SHEET_NAME,
+    );
     const rows = await sheet.getRows();
     for (const row of rows) {
       if (row.get('email') == user) return row.get('name');
@@ -89,8 +93,8 @@ export class DbConnectorService {
     );
 
     const sheet = await this.docInit(
-      this.lessonsListUrl,
-      this.lessonsSheetName,
+      process.env.LESSONS_LIST_URL,
+      process.env.LESSON_SHEET_NAME,
     );
 
     const result = new Set();
@@ -105,7 +109,10 @@ export class DbConnectorService {
 
   async getKidsByClasses(class_name) {
     console.log('KIT - DbConnector Service - getKidsByClasses at', new Date());
-    const sheet = await this.docInit(this.classesListUrl, this.kidsSheetName);
+    const sheet = await this.docInit(
+      process.env.CLASSES_LIST_URL,
+      process.env.KIDS_SHEET_NAME,
+    );
     const rows = await sheet.getRows();
     if (sheet.headerValues.findIndex((v) => v == class_name) < 0)
       throw new HttpException('Класс не найден', HttpStatus.NOT_FOUND); //todo ловить исключения
@@ -123,7 +130,10 @@ export class DbConnectorService {
     const teacher = await this.getTeacherByEmail(user);
     console.log(user);
     console.log(teacher);
-    const sheet = await this.docInit(this.writeListUrl, this.writeSheetName);
+    const sheet = await this.docInit(
+      process.env.WRITE_LIST_URL,
+      process.env.WRITE_SHEET_NAME,
+    );
     const result = [];
     const date = `${new Date().getDate()}/${
       new Date().getMonth() + 1
@@ -160,7 +170,10 @@ export class DbConnectorService {
   async saveUser(user /*: User*/) {
     console.log('KIT - DbConnector Service - Save User at', new Date());
 
-    const sheet = await this.docInit(this.usersListUrl, this.usersSheetName);
+    const sheet = await this.docInit(
+      process.env.USERS_LIST_URL,
+      process.env.USERS_SHEET_NAME,
+    );
     await sheet.addRow(user);
   } //todo create USER
 
@@ -169,8 +182,12 @@ export class DbConnectorService {
       'KIT - DbConnector Service - Find User By Email at',
       new Date(),
     );
-
-    const sheet = await this.docInit(this.usersListUrl, this.usersSheetName);
+    console.log(      process.env.USERS_LIST_URL);
+    console.log(      process.env.USERS_SHEET_NAME);
+    const sheet = await this.docInit(
+      process.env.USERS_LIST_URL,
+      process.env.USERS_SHEET_NAME,
+    );
     const rows = await sheet.getRows();
     for (const row of rows) {
       if (row.get('email') == userDto.email)
@@ -185,7 +202,10 @@ export class DbConnectorService {
   async findUserByLink(activationLink: string) {
     console.log('KIT - DbConnector Service - Find User By Link at', new Date());
 
-    const sheet = await this.docInit(this.usersListUrl, this.usersSheetName);
+    const sheet = await this.docInit(
+      process.env.USERS_LIST_URL,
+      process.env.USERS_SHEET_NAME,
+    );
     const rows = await sheet.getRows();
     for (const row of rows) {
       if (row.get('activationLink') == activationLink) return row.get('email');
@@ -199,7 +219,10 @@ export class DbConnectorService {
       new Date(),
     );
 
-    const sheet = await this.docInit(this.usersListUrl, this.usersSheetName);
+    const sheet = await this.docInit(
+      process.env.USERS_LIST_URL,
+      process.env.USERS_SHEET_NAME,
+    );
     const rows = await sheet.getRows();
     for (let i = 0; i < rows.length; i++) {
       if (rows[i].get('email') == email) {
@@ -211,11 +234,13 @@ export class DbConnectorService {
   }
 
   async deleteUser(email: string) {
-    const sheet = await this.docInit(this.usersListUrl, this.usersSheetName);
+    const sheet = await this.docInit(
+      process.env.USERS_LIST_URL,
+      process.env.USERS_SHEET_NAME,
+    );
     const rows = await sheet.getRows();
     for (const row of rows) {
-      if(row.get('email')==email )
-        await row.delete()
+      if (row.get('email') == email) await row.delete();
     }
   }
 }

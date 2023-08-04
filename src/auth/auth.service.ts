@@ -23,15 +23,19 @@ export class AuthService {
     private dbConnector: DbConnectorService,
     private tokenService: TokenService,
   ) {
-    this.transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT,
-      secure: true,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD,
-      },
-    });
+    setTimeout(
+      () =>
+        (this.transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port: process.env.SMTP_PORT,
+          secure: true,
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASSWORD,
+          },
+        })),
+      2000,
+    );
   }
   async activate(activationLink: string) {
     console.log('KIT - Auth Service - activateAccount at', new Date());
@@ -64,13 +68,11 @@ export class AuthService {
       );
     }
 
-    if (candidate?.activated===false) {
-      await this.dbConnector.deleteUser(formattedEmail)
+    if (candidate?.activated === false) {
+      await this.dbConnector.deleteUser(formattedEmail);
     }
 
-
-
-      const hashPassword = await bcrypt.hash(dto.password, 5);
+    const hashPassword = await bcrypt.hash(dto.password, 5);
 
     const user = {
       email: formattedEmail,
@@ -79,7 +81,7 @@ export class AuthService {
       activated: false,
     };
 
-    const s=await this.sendActivationMail(
+    const s = await this.sendActivationMail(
       user.email,
       `cc210ea5c208.sn.mynetname.net:9790/${user.activationLink}`,
     );

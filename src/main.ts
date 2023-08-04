@@ -37,7 +37,7 @@ bootstrap();
 
 async function readSettings() {
   const file = await open(
-    '/root/WebstormProjects/kit_feedback_collection/config.files/private_key.json',
+    `${__dirname}/../config.files/private_key.json`,
     'r',
   );
   let temp = (await file.read()).buffer.toString();

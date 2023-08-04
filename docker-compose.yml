@@ -14,7 +14,7 @@ services:
     depends_on:
       - kit_pg
     volumes:
-      - /root/WebstormProjects/1:/app/1
+      - /home/adm1n/kit-feedback-server/config.files:/app/config.files
 
 
   kit_pg:

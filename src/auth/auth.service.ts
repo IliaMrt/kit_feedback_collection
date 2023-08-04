@@ -23,9 +23,13 @@ export class AuthService {
     private dbConnector: DbConnectorService,
     private tokenService: TokenService,
   ) {
-    setTimeout(
-      () =>
-        (this.transporter = nodemailer.createTransport({
+    setTimeout(() => {
+      console.log(process.env.SMTP_HOST);
+      console.log(process.env.SMTP_PORT);
+      console.log(process.env.SMTP_USER);
+      console.log(process.env.SMTP_PASSWORD);
+
+        this.transporter = nodemailer.createTransport({
           host: process.env.SMTP_HOST,
           port: process.env.SMTP_PORT,
           secure: true,
@@ -33,9 +37,9 @@ export class AuthService {
             user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASSWORD,
           },
-        })),
-      2000,
-    );
+        })
+
+    }, 3000);
   }
   async activate(activationLink: string) {
     console.log('KIT - Auth Service - activateAccount at', new Date());

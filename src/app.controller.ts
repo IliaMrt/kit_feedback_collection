@@ -62,6 +62,17 @@ export class AppController {
     return await this.appService.getKidsByClasses(className);
   }
 
+  @ApiOperation({
+    summary: 'Returns name of user.',
+    description: 'Returns name of user',
+  })
+  @ApiTags('Main functionality')
+  @UseGuards(JwtAuthGuard)
+  @Get('get-user-name')
+  async getUserName(@User() user) {
+    return await this.appService.getUserName(user.user);
+  }
+
   @ApiTags('Main functionality')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({

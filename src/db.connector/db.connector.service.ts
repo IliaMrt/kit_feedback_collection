@@ -68,7 +68,7 @@ export class DbConnectorService {
     return lessons;
   }
 
-  private async getTeacherByEmail(user) {
+  async getTeacherByEmail(user) {
     console.log(
       'KIT - DbConnector Service - Get Teacher By Email at',
       new Date(),
@@ -179,8 +179,6 @@ export class DbConnectorService {
       'KIT - DbConnector Service - Find User By Email at',
       new Date(),
     );
-    console.log(      process.env.USERS_LIST_URL);
-    console.log(      process.env.USERS_SHEET_NAME);
     const sheet = await this.docInit(
       process.env.USERS_LIST_URL,
       process.env.USERS_SHEET_NAME,

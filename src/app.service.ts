@@ -51,4 +51,10 @@ export class AppService {
     console.log('KIT - Main Service - getClassesByName at', new Date());
     return await this.dbConnector.getClassesByLesson(lessonName);
   }
+
+  async getUserName(user) {
+    console.log('KIT - Main Service - getUserName at', new Date());
+    console.log(user);
+    return await this.dbConnector.getTeacherByEmail(user);
+  }
 }

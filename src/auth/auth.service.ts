@@ -85,7 +85,7 @@ export class AuthService {
     );
     await this.dbConnector.saveUser(user);
 
-    const payload = { email: user.email };
+    const payload = { user: user.email };
     const tokens = this.tokenService.generateTokens(payload);
     response.cookie('refreshToken', tokens.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,

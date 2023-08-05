@@ -31,6 +31,9 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ): Promise<any> {
     console.log('KIT - Auth Controller - activateAccount at', new Date());
+    activationLink = Array.from(activationLink)
+      .slice(1, activationLink.length - 1)
+      .join('');
     await this.authService.activate(activationLink);
     // this.checkForError(activationResult);
     // todo
@@ -70,13 +73,5 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh access token.' })
   async refresh(data: { refreshToken: string }) {
     return await this.authService.refresh(data.refreshToken);
-  }
-
-  @Post('activate')
-  @ApiTags('Auth')
-  @ApiOperation({ summary: 'Activate user account.' })
-  async activateUser(data: { activationLink: string }) {
-    console.log('KIT - Auth Controller - activate at', new Date());
-    return await this.authService.activate(data.activationLink);
   }
 }

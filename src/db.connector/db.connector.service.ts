@@ -24,7 +24,6 @@ export class DbConnectorService {
     console.log(data);
     const key = data; //.private_key;
     await file.close();*/
-    console.log(1);
     const serviceAccountAuth = new JWT({
       email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
       key: process.env.GOOGLE_PRIVATE_KEY,
@@ -128,8 +127,6 @@ export class DbConnectorService {
     console.log('KIT - DbConnector Service - writeFeedBack', new Date());
 
     const teacher = await this.getTeacherByEmail(user);
-    console.log(user);
-    console.log(teacher);
     const sheet = await this.docInit(
       process.env.WRITE_LIST_URL,
       process.env.WRITE_SHEET_NAME,
@@ -207,8 +204,10 @@ export class DbConnectorService {
       process.env.USERS_SHEET_NAME,
     );
     const rows = await sheet.getRows();
+    // console.log(activationLink);
     for (const row of rows) {
-      if (row.get('activationLink') == activationLink) return row.get('email');
+      // console.log(`${ row.get("activationLink") }, ${row.get("activationLink")==activationLink}`);
+      if (row.get('activationLink') == activationLink) return row.get('email').toString();
     }
     return null;
   }

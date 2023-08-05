@@ -23,29 +23,23 @@ export class AuthService {
     private dbConnector: DbConnectorService,
     private tokenService: TokenService,
   ) {
+    // инициализация экземпляра мейлера с задержкой, чтобы успели инициализироваться
+    // переменные окружения
     setTimeout(() => {
-      console.log(process.env.SMTP_HOST);
-      console.log(process.env.SMTP_PORT);
-      console.log(process.env.SMTP_USER);
-      console.log(process.env.SMTP_PASSWORD);
-
-        this.transporter = nodemailer.createTransport({
-          host: process.env.SMTP_HOST,
-          port: process.env.SMTP_PORT,
-          secure: true,
-          auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASSWORD,
-          },
-        })
-
+      this.transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        secure: true,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASSWORD,
+        },
+      });
     }, 3000);
   }
   async activate(activationLink: string) {
     console.log('KIT - Auth Service - activateAccount at', new Date());
-    console.log(activationLink);
     const email = await this.dbConnector.findUserByLink(activationLink);
-    console.log(email);
     if (!email) {
       throw new HttpException( //todo ловить исключения
         'Некорректная ссылка активации',
@@ -85,11 +79,10 @@ export class AuthService {
       activated: false,
     };
 
-    const s = await this.sendActivationMail(
+    await this.sendActivationMail(
       user.email,
-      `cc210ea5c208.sn.mynetname.net:9790/${user.activationLink}`,
+      `http://cc210ea5c208.sn.mynetname.net:9790/auth/activate/_${user.activationLink}_`,
     );
-    console.log(s);
     await this.dbConnector.saveUser(user);
 
     const payload = { email: user.email };
@@ -138,9 +131,6 @@ export class AuthService {
   }
   async sendActivationMail(to, link) {
     console.log('KIT - Auth Service - send activation mail at', new Date());
-    console.log(process.env.SMTP_HOST);
-    console.log(process.env.SMTP_PORT);
-    console.log(process.env.SMTP_USER);
 
     let mailSent = false;
     try {
@@ -152,8 +142,12 @@ export class AuthService {
         html: `
                     <div>
                         <h1>Для активации перейдите по ссылке</h1>
-                        <a href="${link}">${link}</a>
+                        <a href="${link}" target="_blank">${link}</a>
                     </div>
+                    
+                        <p>Некоторые почтовые клиенты не позволяют корректно перейти по ссылке.<br>
+                        Если вы столкнулись с этим - скопируйте ссылку и вставьте её в браузер.</p>
+                    
                 `,
       });
       mailSent = true;

@@ -26,23 +26,34 @@ export class DbConnectorService {
       process.env.TEACHER_SHEET_NAME,
     );
 
-    await sheet.loadCells('A1:B200'); //todo брать диапазон условно
+    const rows = await sheet.getRows();
+
+    await sheet.loadCells({
+      startRowIndex: 0,
+      endRowIndex: 1,
+      startColumnIndex: 0,
+      endColumnIndex: rows.length - 1,
+    });
+    await sheet.loadCells();
 
     const teacher = await this.getTeacherByEmail(user);
+
     const lessons = {
       mainLessons: [],
       restLessons: [],
     };
+
     const mainSet = new Set();
     const restSet = new Set();
-    for (let i = 1; i < 75; i++) {
-      //todo 1 и 76 заменить на количество ячеек
+
+    for (let i = 1; i < rows.length - 1; i++) {
       const currentTeacher = sheet.getCell(i, 1).value;
       const currentLesson = sheet.getCell(i, 0).value;
       if (currentTeacher)
         if (currentTeacher == teacher) mainSet.add(currentLesson);
         else restSet.add(currentLesson);
     }
+
     mainSet.forEach((v) => {
       if (restSet.has(v)) restSet.delete(v);
     });

@@ -8,7 +8,7 @@
 ## Description
 
 This application was developed by [Ilya Martens](https://github.com/IliaMrt) with NestJS
-framework as a backend part of web application for private school for collection feedbacks from teachers.
+framework as a backend part of a web application for a private school for collecting feedback from teachers.
 
 ## Requirements
 - [Node.js](https://nodejs.org/en) (with [NPM](https://www.npmjs.com/))
@@ -16,7 +16,7 @@ framework as a backend part of web application for private school for collection
 
 ## Deploy
 
-To deploy the application, first of all, you need to clone repository to your PC.
+To deploy the application, first of all, you need to clone the repository to your PC.
 
 You should create your config file "main.config.json" with follow mandatory fields:
 

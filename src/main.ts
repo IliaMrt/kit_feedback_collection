@@ -35,7 +35,7 @@ async function bootstrap() {
 bootstrap();
 
 async function readSettings() {
-  const file = await open(`${__dirname}/../config.files/private_key.json`, 'r');
+  const file = await open(`${__dirname}/../config.files/main.config.json`, 'r');
   let temp = (await file.read()).buffer.toString();
   temp = temp.slice(0, (await file.stat()).size);
   await file.close();

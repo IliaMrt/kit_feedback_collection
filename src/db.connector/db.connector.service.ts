@@ -148,7 +148,7 @@ export class DbConnectorService {
     await sheet.addRows(result);
   }
 
-  async saveUser(user /*: User*/) {
+  async saveUser(user) {
     console.log('KIT - DbConnector Service - Save User at', new Date());
 
     const sheet = await this.docInit(
@@ -186,9 +186,7 @@ export class DbConnectorService {
       process.env.USERS_SHEET_NAME,
     );
     const rows = await sheet.getRows();
-    // console.log(activationLink);
     for (const row of rows) {
-      // console.log(`${ row.get("activationLink") }, ${row.get("activationLink")==activationLink}`);
       if (row.get('activationLink') == activationLink)
         return row.get('email').toString();
     }
@@ -208,7 +206,7 @@ export class DbConnectorService {
     const rows = await sheet.getRows();
     for (let i = 0; i < rows.length; i++) {
       if (rows[i].get('email') == email) {
-        await rows[i].set('activated', true); // = true;
+        await rows[i].set('activated', true);
         await rows[i].save();
         return;
       }

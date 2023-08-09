@@ -15,19 +15,9 @@ import { JwtModule } from '@nestjs/jwt';
       },
     }),
     ConfigModule.forRoot({
-      //isGlobal: true,
       envFilePath: `.${process.env.NODE_ENV}.env`,
     }),
-    /* TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: Number(process.env.POSTGRES_PORT),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DB,
-      entities: [Token],
-      synchronize: true,
-    }),*/
+
     TypeOrmModule.forFeature([Token]),
   ],
   exports: [JwtModule, TokenService],

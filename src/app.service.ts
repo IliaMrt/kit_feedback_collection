@@ -8,31 +8,6 @@ export class AppService {
     console.log('KIT - Main Service - writeFeedback at', new Date());
 
     return await this.dbConnector.writeFeedBack(feedback, user.user);
-
-    /*{
-      "teacher": "Маша",
-      "lesson": "Русский",
-      "className": "1 класс",
-      "lessonDate": "12.01.2003",
-      "theme": "Дроби",
-      "personalFeedbacks": [
-        {
-          "student": "макар",
-          "activity": true,
-          "attended": true,
-          "commentary": "good boy",
-          "star": false,
-        },
-        {
-          "student": "иван",
-          "activity": false,
-          "attended": false,
-          "commentary": "bad boy",
-          "star": true,
-        },
-      ],
-      "homework": "learn",
-    }*/
   }
 
   async getLessonsByUser(user) {

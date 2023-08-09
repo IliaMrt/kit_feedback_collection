@@ -30,6 +30,6 @@ import { AuthService } from './auth/auth.service';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, DbConnectorService, /*TokenService,*/ AuthService],
+  providers: [AppService, DbConnectorService, AuthService],
 })
 export class AppModule {}

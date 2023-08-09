@@ -40,10 +40,8 @@ async function readSettings() {
   temp = temp.slice(0, (await file.stat()).size);
   await file.close();
   const data = JSON.parse(temp);
-  // console.log(data);
   process.env.GOOGLE_PRIVATE_KEY = data.private_key;
   process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL = data.client_email;
-  // console.log(process.env.TEST);
   const serviceAccountAuth = new JWT({
     email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
     key: process.env.GOOGLE_PRIVATE_KEY,

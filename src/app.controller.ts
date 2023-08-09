@@ -27,8 +27,6 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   @ApiTags('Main functionality')
   async writeFeedback(@Body() feedback, @User() user) {
-    // console.log(JSON.stringify(feedback)+' '+user.user);
-    // return 100
     return await this.appService.writeFeedback(feedback, user);
   }
   @ApiOperation({

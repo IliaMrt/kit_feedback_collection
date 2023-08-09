@@ -7,7 +7,6 @@ import { UserDto } from './dto/user.dto';
 import { RegistrationDto } from './dto/registration.dto';
 
 @Controller('auth')
-// @UseFilters(new HttpExceptionFilter())
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
@@ -42,7 +41,6 @@ export class AuthController {
   @ApiOperation({ summary: 'Create/register user.' })
   async registration(
     @Body() registrationDto: RegistrationDto,
-    // @Req() req,
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     console.log('KIT - Auth Controller - registration at', new Date());

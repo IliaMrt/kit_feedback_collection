@@ -1,29 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
-import { open } from 'fs/promises';
 import { FeedbackForWriteDto } from './dto/feedback.for.write.dto';
 import { UserDto } from '../auth/dto/user.dto';
 import * as process from 'process';
 
-
 @Injectable()
 export class DbConnectorService {
   private async docInit(docUrl: string, sheetName: string | number) {
-    /*    const file = await open(
-      '/root/WebstormProjects/kit_feedback_collection/src/db.connector/private_key.json',
-      'r',
-    );*/
-    /*   const file = await open(
-      '/root/WebstormProjects/kit_feedback_collection/config.files/private_key.json',
-      'r',
-    );
-    const temp = (await file.read()).buffer.toString(); //todo change to JSON
-    console.log(temp);
-    const data = JSON.parse(temp);
-    console.log(data);
-    const key = data; //.private_key;
-    await file.close();*/
     const serviceAccountAuth = new JWT({
       email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
       key: process.env.GOOGLE_PRIVATE_KEY,
@@ -114,7 +98,7 @@ export class DbConnectorService {
     );
     const rows = await sheet.getRows();
     if (sheet.headerValues.findIndex((v) => v == class_name) < 0)
-      throw new HttpException('Класс не найден', HttpStatus.NOT_FOUND); //todo ловить исключения
+      throw new HttpException('Класс не найден', HttpStatus.NOT_FOUND);
     const res = [];
     rows.forEach((row) => {
       if (row.get(class_name))
@@ -172,7 +156,7 @@ export class DbConnectorService {
       process.env.USERS_SHEET_NAME,
     );
     await sheet.addRow(user);
-  } //todo create USER
+  }
 
   async findUser(userDto: UserDto) {
     console.log(
@@ -205,7 +189,8 @@ export class DbConnectorService {
     // console.log(activationLink);
     for (const row of rows) {
       // console.log(`${ row.get("activationLink") }, ${row.get("activationLink")==activationLink}`);
-      if (row.get('activationLink') == activationLink) return row.get('email').toString();
+      if (row.get('activationLink') == activationLink)
+        return row.get('email').toString();
     }
     return null;
   }

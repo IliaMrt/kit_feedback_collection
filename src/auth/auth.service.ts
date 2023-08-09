@@ -13,6 +13,7 @@ import * as nodemailer from 'nodemailer';
 import { DbConnectorService } from '../db.connector/db.connector.service';
 import { TokenService } from '../token/token.service';
 import { Response } from 'express';
+import { RegistrationDto } from './dto/registration.dto';
 
 @Injectable()
 export class AuthService {
@@ -41,14 +42,14 @@ export class AuthService {
     console.log('KIT - Auth Service - activateAccount at', new Date());
     const email = await this.dbConnector.findUserByLink(activationLink);
     if (!email) {
-      throw new HttpException( //todo ловить исключения
+      throw new HttpException(
         'Некорректная ссылка активации',
         HttpStatus.BAD_REQUEST,
       );
     }
     await this.dbConnector.saveActivatedUser(email);
   }
-  async registration(dto: UserDto, response: Response) {
+  async registration(dto: RegistrationDto, response: Response) {
     console.log('KIT - Auth Service - registration at', new Date());
 
     const formattedEmail = dto.email.toLowerCase();
@@ -59,7 +60,6 @@ export class AuthService {
     });
 
     if (candidate?.activated) {
-      //TODO: returns internal server error in response, not good.
       throw new HttpException(
         'Пользователь с таким email уже существует',
         HttpStatus.CONFLICT,
@@ -81,7 +81,7 @@ export class AuthService {
 
     await this.sendActivationMail(
       user.email,
-      `http://cc210ea5c208.sn.mynetname.net:9790/auth/activate/_${user.activationLink}_`,
+      `http://${this.configService.get('CLIENT_URL')}/_${user.activationLink}_`,
     );
     await this.dbConnector.saveUser(user);
 
@@ -112,7 +112,7 @@ export class AuthService {
       throw new UnauthorizedException({
         message: 'Неверный пароль',
       });
-    } //todo ловить исключение
+    }
     if (!userInfo.activated) {
       throw new HttpException(
         'Пользователь не активирован, перейдите по ссылке из письма',
@@ -125,8 +125,6 @@ export class AuthService {
     return { ...tokens, email: userDto.email };
   }
   async generatePayload(user: UserDto) {
-    //todo create USER
-
     return { user: user?.email };
   }
   async sendActivationMail(to, link) {
@@ -153,8 +151,6 @@ export class AuthService {
       mailSent = true;
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.NOT_FOUND);
-
-      console.log(`Unable to send activation mail: ${e.message}`);
     }
     return mailSent;
   }

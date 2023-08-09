@@ -12,7 +12,4 @@ export class RegistrationDto {
   @IsDefined()
   @IsEmail()
   readonly email: string;
-
-  //OAuth provider
-  // readonly provider: string;
 }

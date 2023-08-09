@@ -7,7 +7,6 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { TokenModule } from './token/token.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TokenService } from './token/token.service';
 import { Token } from './token/token.entity';
 import { AuthService } from './auth/auth.service';
 

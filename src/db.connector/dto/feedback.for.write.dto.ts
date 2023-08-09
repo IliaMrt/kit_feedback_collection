@@ -9,7 +9,6 @@ export class FeedbackForWriteDto {
     readonly date: any;
     readonly theme: string;
     readonly homework: string;
-
-  }
+  };
   readonly personalFeedbacks: PersonalFeedbackDto[];
 }

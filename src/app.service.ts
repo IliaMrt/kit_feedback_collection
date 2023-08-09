@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { DbConnectorService } from './db.connector/db.connector.service';
-import { FullFeedbackDto } from './db.connector/dto/full.feedback.dto';
-import { FeedbackForWriteDto } from './db.connector/dto/feedback.for.write.dto';
 
 @Injectable()
 export class AppService {

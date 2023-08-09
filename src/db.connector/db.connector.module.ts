@@ -4,6 +4,6 @@ import { DbConnectorController } from './db.connector.controller';
 
 @Module({
   providers: [DbConnectorService],
-  controllers: [DbConnectorController]
+  controllers: [DbConnectorController],
 })
 export class DbConnectorModule {}

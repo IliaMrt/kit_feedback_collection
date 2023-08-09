@@ -1,19 +1,10 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Req,
-  Res,
-  UseFilters,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
-import { HttpExceptionFilter } from './http-exception.filter';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { UserDto } from './dto/user.dto';
+import { RegistrationDto } from './dto/registration.dto';
 
 @Controller('auth')
 // @UseFilters(new HttpExceptionFilter())
@@ -35,8 +26,6 @@ export class AuthController {
       .slice(1, activationLink.length - 1)
       .join('');
     await this.authService.activate(activationLink);
-    // this.checkForError(activationResult);
-    // todo
     return response.redirect(this.configService.get('CLIENT_URL'));
   }
 
@@ -52,12 +41,12 @@ export class AuthController {
   @ApiTags('Auth')
   @ApiOperation({ summary: 'Create/register user.' })
   async registration(
-    // @Body() registrationDto: RegistrationDto,
-    @Req() req,
+    @Body() registrationDto: RegistrationDto,
+    // @Req() req,
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     console.log('KIT - Auth Controller - registration at', new Date());
-    return this.authService.registration(req.body, res);
+    return this.authService.registration(registrationDto, res);
   }
 
   @Post('logout')

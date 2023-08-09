@@ -7,7 +7,6 @@ export class PersonalFeedbackDto {
   readonly student: string;
   @ApiProperty()
   @IsDefined()
-
   readonly attended: boolean;
   readonly commentary: string;
   readonly star: boolean;

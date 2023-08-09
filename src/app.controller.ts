@@ -1,22 +1,8 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Req,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { User } from './auth/Decorator/user';
 import { AuthGuard } from './auth/Decorator/auth.guard';
-import {
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from './auth/Decorator/jwt-auth.guard';
 
 @Controller('kit')
@@ -40,11 +26,10 @@ export class AppController {
   @Post('write-feedback')
   @UseGuards(JwtAuthGuard)
   @ApiTags('Main functionality')
-  async writeFeedback(@Body() feedback,
-                      @User() user) {
+  async writeFeedback(@Body() feedback, @User() user) {
     // console.log(JSON.stringify(feedback)+' '+user.user);
     // return 100
-     return await this.appService.writeFeedback(feedback, user);
+    return await this.appService.writeFeedback(feedback, user);
   }
   @ApiOperation({
     summary: 'Returns kids by class or group name.',

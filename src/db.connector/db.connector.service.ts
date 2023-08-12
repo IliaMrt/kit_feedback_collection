@@ -155,7 +155,6 @@ export class DbConnectorService {
         time: time,
       }),
     );
-    console.log(JSON.stringify(result));
     await sheet.addRows(result);
   }
 

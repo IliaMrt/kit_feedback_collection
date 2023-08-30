@@ -9,7 +9,7 @@ export class PersonalFeedbackDto {
   @IsDefined()
   readonly attended: boolean;
   readonly commentary: string;
-  readonly star: boolean;
+  readonly hard: boolean;
 
-  readonly activity: boolean;
+  readonly soft: boolean;
 }

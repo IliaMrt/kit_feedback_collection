@@ -30,4 +30,9 @@ export class AppService {
     console.log(user);
     return await this.dbConnector.getTeacherByEmail(user);
   }
+
+  async getLastVisit(user) {
+    console.log('KIT - Main Service - get Last Visit at', new Date());
+    return await this.dbConnector.getLastVisit(user);
+  }
 }

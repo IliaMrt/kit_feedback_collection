@@ -241,4 +241,18 @@ export class DbConnectorService {
       if (row.get('email') == email) await row.delete();
     }
   }
+
+  async getLastVisit(user) {
+    console.log('KIT - DbConnector Service - Get Last Visit at', new Date());
+
+    const sheet = await this.docInit(
+      process.env.USERS_LIST_URL,
+      process.env.USERS_SHEET_NAME,
+    );
+    const rows = await sheet.getRows();
+    for (const row of rows) {
+      if (row.get('email') == user) return row.get('createdAt');
+    }
+    return 'не найден';
+  }
 }

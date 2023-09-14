@@ -56,6 +56,17 @@ export class AppController {
     return await this.appService.getUserName(user.user);
   }
 
+  @ApiOperation({
+    summary: 'Returns date and time of last users visit.',
+    description: 'Returns date and time of last users visit.',
+  })
+  @ApiTags('Main functionality')
+  @UseGuards(JwtAuthGuard)
+  @Get('get-last-visit')
+  async getLastVisit(@User() user) {
+    return await this.appService.getLastVisit(user.user);
+  }
+
   @ApiTags('Main functionality')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({

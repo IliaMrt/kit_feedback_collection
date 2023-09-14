@@ -124,11 +124,28 @@ export class DbConnectorService {
     });
     return res;
   }
+  async writeLastVisit(user: string) {
+    const sheet = await this.docInit(
+      process.env.USERS_LIST_URL,
+      process.env.USERS_SHEET_NAME,
+    );
+    const rows = await sheet.getRows();
+    for (const row of rows) {
+      if (row.get('email') == user) {
+        row.set('lastVisit', new Date().toLocaleString());
+        await row.save();
+        return;
+      }
+    }
+  }
 
   async writeFeedBack(feedback: FeedbackForWriteDto, user: string) {
     console.log('KIT - DbConnector Service - writeFeedBack', new Date());
 
     const teacher = await this.getTeacherByEmail(user);
+
+    await this.writeLastVisit(teacher);
+
     const sheet = await this.docInit(
       process.env.WRITE_LIST_URL,
       process.env.WRITE_SHEET_NAME,
@@ -245,7 +262,7 @@ export class DbConnectorService {
   async getLastVisit(user) {
     console.log('KIT - DbConnector Service - Get Last Visit at', new Date());
     const userName = await this.getTeacherByEmail(user);
-    console.log(userName);
+    // console.log(userName);
     const sheet = await this.docInit(
       process.env.WRITE_LIST_URL,
       process.env.WRITE_SHEET_NAME,

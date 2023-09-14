@@ -134,10 +134,9 @@ export class DbConnectorService {
       if (row.get('name') == user) {
         row.set(
           'lastVisit',
-          `${new Date().toLocaleDateString()} в ${new Date().toLocaleTimeString()}`,
-        );
-        console.log(
-          `${new Date().toLocaleDateString()} в ${new Date().toLocaleTimeString()}`,
+          `${new Date().toLocaleDateString()} в ${new Date().toLocaleTimeString(
+            'ru-RU',
+          )}`,
         );
         await row.save();
         return;

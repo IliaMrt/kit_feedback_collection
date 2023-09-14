@@ -264,16 +264,15 @@ export class DbConnectorService {
     const userName = await this.getTeacherByEmail(user);
     // console.log(userName);
     const sheet = await this.docInit(
-      process.env.WRITE_LIST_URL,
-      process.env.WRITE_SHEET_NAME,
+      process.env.USERS_LIST_URL,
+      process.env.USERS_SHEET_NAME,
     );
     const rows = await sheet.getRows();
 
-    for (let i = rows.length - 1; i > 0; i--) {
-      // console.log(rows[i].get('teacher'));
-      if (rows[i].get('teacher') == userName)
-        return `${rows[i].get('date')} в ${rows[i].get('time')}`;
+    for (const row of rows) {
+      if (row.get('name') == userName) return row.get('name');
     }
+
     return 'не найден';
   }
 }

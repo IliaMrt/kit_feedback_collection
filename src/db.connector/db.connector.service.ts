@@ -245,6 +245,7 @@ export class DbConnectorService {
   async getLastVisit(user) {
     console.log('KIT - DbConnector Service - Get Last Visit at', new Date());
     const userName = this.getTeacherByEmail(user);
+    console.log(userName);
     const sheet = await this.docInit(
       process.env.WRITE_LIST_URL,
       process.env.WRITE_SHEET_NAME,
@@ -252,6 +253,7 @@ export class DbConnectorService {
     const rows = await sheet.getRows();
 
     for (let i = rows.length - 1; i > 0; i--) {
+      console.log(rows[i].get('teacher'));
       if (rows[i].get('teacher') == userName)
         return `${rows[i].get('date')} в ${rows[i].get('time')}`;
     }

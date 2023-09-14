@@ -270,7 +270,7 @@ export class DbConnectorService {
     const rows = await sheet.getRows();
 
     for (const row of rows) {
-      if (row.get('name') == userName) return row.get('name');
+      if (row.get('name') == userName) return row.get('lastVisit');
     }
 
     return 'не найден';

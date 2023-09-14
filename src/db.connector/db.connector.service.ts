@@ -160,7 +160,7 @@ export class DbConnectorService {
         homework: feedback.form.homework,
         date: date,
         time: time,
-        createdAt: new Date(),
+        createdAt: new Date().toLocaleString(),
       }),
     );
     await sheet.addRows(result);

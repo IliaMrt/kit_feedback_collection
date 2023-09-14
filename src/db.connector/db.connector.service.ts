@@ -113,7 +113,7 @@ export class DbConnectorService {
     const res = [];
     rows.forEach((row) => {
       if (row.get(class_name))
-        res.push({ id: res.length + 1, student: row.get(class_name) });
+        res.push({ id: res.length + 1, student: row.get(class_name), attended: true });
     });
     return res;
   }

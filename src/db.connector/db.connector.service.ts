@@ -131,7 +131,7 @@ export class DbConnectorService {
     );
     const rows = await sheet.getRows();
     for (const row of rows) {
-      if (row.get('email') == user) {
+      if (row.get('name') == user) {
         row.set('lastVisit', new Date().toLocaleString());
         await row.save();
         return;

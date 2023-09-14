@@ -244,7 +244,7 @@ export class DbConnectorService {
 
   async getLastVisit(user) {
     console.log('KIT - DbConnector Service - Get Last Visit at', new Date());
-    const userName = this.getTeacherByEmail(user);
+    const userName = await this.getTeacherByEmail(user);
     console.log(userName);
     const sheet = await this.docInit(
       process.env.WRITE_LIST_URL,

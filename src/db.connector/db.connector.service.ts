@@ -136,6 +136,7 @@ export class DbConnectorService {
           'lastVisit',
           `${new Date().toLocaleDateString()} в ${new Date().toLocaleTimeString(
             'ru-RU',
+            { timeZone: 'Europe/Moscow' },
           )}`,
         );
         await row.save();

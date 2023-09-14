@@ -113,7 +113,14 @@ export class DbConnectorService {
     const res = [];
     rows.forEach((row) => {
       if (row.get(class_name))
-        res.push({ id: res.length + 1, student: row.get(class_name), attended: true });
+        // предустанавливаем attended, hard и soft для того, чтобы переключатели были в правильном положении
+        res.push({
+          id: res.length + 1,
+          student: row.get(class_name),
+          attended: true,
+          hard: true,
+          soft: true,
+        });
     });
     return res;
   }

@@ -136,6 +136,9 @@ export class DbConnectorService {
           'lastVisit',
           `${new Date().toLocaleDateString()} в ${new Date().toLocaleTimeString()}`,
         );
+        console.log(
+          `${new Date().toLocaleDateString()} в ${new Date().toLocaleTimeString()}`,
+        );
         await row.save();
         return;
       }

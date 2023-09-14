@@ -244,14 +244,16 @@ export class DbConnectorService {
 
   async getLastVisit(user) {
     console.log('KIT - DbConnector Service - Get Last Visit at', new Date());
-
+    const userName = this.getTeacherByEmail(user);
     const sheet = await this.docInit(
-      process.env.USERS_LIST_URL,
-      process.env.USERS_SHEET_NAME,
+      process.env.WRITE_LIST_URL,
+      process.env.WRITE_SHEET_NAME,
     );
     const rows = await sheet.getRows();
-    for (const row of rows) {
-      if (row.get('email') == user) return row.get('createdAt');
+
+    for (let i = rows.length - 1; i > 0; i--) {
+      if (rows[i].get('teacher') == userName)
+        return `${rows[i].get('date')} в ${rows[i].get('time')}`;
     }
     return 'не найден';
   }

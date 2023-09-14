@@ -253,7 +253,7 @@ export class DbConnectorService {
     const rows = await sheet.getRows();
 
     for (let i = rows.length - 1; i > 0; i--) {
-      console.log(rows[i].get('teacher'));
+      // console.log(rows[i].get('teacher'));
       if (rows[i].get('teacher') == userName)
         return `${rows[i].get('date')} в ${rows[i].get('time')}`;
     }

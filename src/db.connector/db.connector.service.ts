@@ -161,7 +161,7 @@ export class DbConnectorService {
       new Date().getMonth() + 1
     }/${new Date().getFullYear()}`;
     const tempDate = new Date(feedback.form.date);
-    const lessonDate = `${tempDate.getDate()}/${
+    const lessonDate = `${tempDate.getDate() + 1}/${
       tempDate.getMonth() + 1
     }/${tempDate.getFullYear()}`;
     const time = `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`;

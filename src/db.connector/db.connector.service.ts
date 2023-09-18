@@ -134,10 +134,12 @@ export class DbConnectorService {
       if (row.get('name') == user) {
         row.set(
           'lastVisit',
-          `${new Date().toLocaleDateString()} в ${new Date().toLocaleTimeString(
-            'ru-RU',
-            { timeZone: 'Europe/Moscow' },
-          )}`,
+          `${new Date().toLocaleDateString(
+            'ru-Ru',
+            {},
+          )} в ${new Date().toLocaleTimeString('ru-RU', {
+            timeZone: 'Europe/Moscow',
+          })}`,
         );
         await row.save();
         return;
